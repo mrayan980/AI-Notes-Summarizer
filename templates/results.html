@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Study Notes Search Engine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Search Results</h1>
+            <p class="subtitle">Searching in: <strong>{{ filename }}</strong></p>
+        </header>
+
+        <nav class="nav-links">
+            <a href="{{ url_for('search_page') }}" class="nav-link">🔙 New Search</a>
+            <a href="{{ url_for('summarize_page') }}" class="nav-link">🤖 Generate Summary</a>
+            <a href="{{ url_for('index') }}" class="nav-link">📤 Upload New File</a>
+        </nav>
+
+        <div class="search-header">
+            <form action="{{ url_for('search_results') }}" method="post" class="search-form inline-search">
+                <div class="search-input-group">
+                    <input 
+                        type="text" 
+                        name="query" 
+                        value="{{ query }}" 
+                        placeholder="Enter search terms..." 
+                        class="search-input"
+                        required
+                    >
+                    <button type="submit" class="btn btn-search">
+                        🔍 Search
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="results-summary">
+            <h2>Found <span class="highlight-count">{{ results.count }}</span> matches for "<strong>{{ query }}</strong>"</h2>
+        </div>
+
+        {% if results.count > 0 %}
+            <div class="results-container">
+                {% for result in results.matches %}
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-badge">Match #{{ loop.index }}</span>
+                            <span class="result-meta">
+                                {% if result.page_number %}
+                                    Page/Slide {{ result.page_number }} • 
+                                {% endif %}
+                                Line {{ result.line_number }}
+                            </span>
+                        </div>
+                        <div class="result-snippet">
+                            {{ result.snippet | safe }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-results">
+                <div class="no-results-icon">😕</div>
+                <h3>No matches found</h3>
+                <p>Try different keywords or check your spelling</p>
+                
+                {% if recent_searches and recent_searches|length > 0 %}
+                <div class="suggestions">
+                    <p>Try one of your recent searches:</p>
+                    <div class="tag-cloud">
+                        {% for search in recent_searches %}
+                            {% if search != query %}
+                                <form action="{{ url_for('search_results') }}" method="post" style="display: inline;">
+                                    <input type="hidden" name="query" value="{{ search }}">
+                                    <button type="submit" class="tag-button">{{ search }}</button>
+                                </form>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if recent_searches and recent_searches|length > 0 %}
+        <div class="recent-searches-sidebar">
+            <h4>Recent Searches</h4>
+            <div class="tag-cloud">
+                {% for search in recent_searches %}
+                    <form action="{{ url_for('search_results') }}" method="post" style="display: inline;">
+                        <input type="hidden" name="query" value="{{ search }}">
+                        <button type="submit" class="tag-button {% if search == query %}active{% endif %}">
+                            {{ search }}
+                        </button>
+                    </form>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <footer>
+            <p>Showing results with context • Matches are highlighted in yellow</p>
+        </footer>
+    </div>
+</body>
+</html>

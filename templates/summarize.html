@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Summary - Study Notes Search Engine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 AI-Generated Summary</h1>
+            <p class="subtitle">Summary of: <strong>{{ filename }}</strong></p>
+        </header>
+
+        <nav class="nav-links">
+            <a href="{{ url_for('search_page') }}" class="nav-link">🔍 Search Notes</a>
+            <a href="{{ url_for('index') }}" class="nav-link">📤 Upload New File</a>
+            <a href="{{ url_for('download_summary') }}" class="nav-link">💾 Download Summary</a>
+        </nav>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.word_count }}</div>
+                <div class="stat-label">Words</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.line_count }}</div>
+                <div class="stat-label">Lines</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ summary.bullet_points|length }}</div>
+                <div class="stat-label">Key Points</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.compression_ratio }}%</div>
+                <div class="stat-label">Compression</div>
+            </div>
+        </div>
+
+        <div class="card summary-card">
+            <div class="card-header">
+                <h2>📝 Key Points Summary</h2>
+            </div>
+            <div class="summary-content">
+                {% for point in summary.bullet_points %}
+                    <div class="summary-point">
+                        <span class="point-number">{{ loop.index }}</span>
+                        <p>{{ point }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card keywords-card">
+            <div class="card-header">
+                <h2>🔑 Important Keywords</h2>
+            </div>
+            <div class="keywords-cloud">
+                {% for keyword in keywords %}
+                    <span class="keyword-tag">{{ keyword }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{{ url_for('download_summary') }}" class="btn btn-primary">
+                💾 Download Summary as TXT
+            </a>
+            <a href="{{ url_for('search_page') }}" class="btn btn-secondary">
+                🔍 Search in Notes
+            </a>
+        </div>
+
+        <div class="info-card">
+            <h3>ℹ️ About This Summary</h3>
+            <p>
+                This summary was generated using extractive summarization techniques. 
+                Key sentences were selected based on word frequency, position, and importance markers. 
+                Keywords were extracted by analyzing term frequency while filtering common stop words.
+            </p>
+        </div>
+
+        <footer>
+            <p>Summary generated using Python NLP techniques | No external AI models required</p>
+        </footer>
+    </div>
+
+    <script>
+        // Add copy functionality to keywords
+        document.querySelectorAll('.keyword-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const keyword = this.textContent;
+                
+                // Create temporary textarea to copy
+                const textarea = document.createElement('textarea');
+                textarea.value = keyword;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                // Visual feedback
+                this.classList.add('copied');
+                setTimeout(() => {
+                    this.classList.remove('copied');
+                }, 1000);
+            });
+        });
+
+        // Add copy functionality to summary points
+        document.querySelectorAll('.summary-point').forEach(point => {
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-point-btn';
+            copyBtn.innerHTML = '📋';
+            copyBtn.title = 'Copy this point';
+            
+            copyBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const text = point.querySelector('p').textContent;
+                
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                copyBtn.innerHTML = '✅';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '📋';
+                }, 1500);
+            });
+            
+            point.appendChild(copyBtn);
+        });
+    </script>
+</body>
+</html>

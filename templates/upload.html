@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Notes Search Engine - Upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Study Notes Search Engine</h1>
+            <p class="subtitle">Upload, Search, and Summarize Your Study Materials</p>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <h2>Upload Your Study Notes</h2>
+            <p>Supported formats: PDF, PPT, PPTX, TXT (Max 16MB)</p>
+            
+            <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" class="upload-form">
+                <div class="file-input-wrapper">
+                    <input type="file" name="file" id="file" accept=".pdf,.ppt,.pptx,.txt" required>
+                    <label for="file" class="file-label">
+                        <span class="file-icon">📄</span>
+                        <span class="file-text">Choose a file or drag here</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    Upload & Process
+                </button>
+            </form>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3>Smart Search</h3>
+                <p>Search through your notes with highlighted results and context snippets</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Summarizer</h3>
+                <p>Generate concise summaries with key points, definitions, and formulas</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💡</div>
+                <h3>Keyword Extraction</h3>
+                <p>Automatically identify important terms and concepts from your materials</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built with Python Flask | Supports PDF, PPT, PPTX, and TXT files</p>
+        </footer>
+    </div>
+
+    <script>
+        // File input enhancement
+        const fileInput = document.getElementById('file');
+        const fileLabel = document.querySelector('.file-label');
+        const fileText = document.querySelector('.file-text');
+
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                fileText.textContent = fileName;
+                fileLabel.classList.add('file-selected');
+            }
+        });
+
+        // Drag and drop
+        fileLabel.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            fileLabel.classList.add('drag-over');
+        });
+
+        fileLabel.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            fileLabel.classList.remove('drag-over');
+        });
+
+        fileLabel.addEventListener('drop', function(e) {
+            e.preventDefault();
+            fileLabel.classList.remove('drag-over');
+            
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                const fileName = e.dataTransfer.files[0].name;
+                fileText.textContent = fileName;
+                fileLabel.classList.add('file-selected');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Notes - Study Notes Search Engine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Search Your Notes</h1>
+            <p class="subtitle">Currently viewing: <strong>{{ filename }}</strong></p>
+        </header>
+
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}" class="nav-link">📤 Upload New File</a>
+            <a href="{{ url_for('summarize_page') }}" class="nav-link">🤖 Generate Summary</a>
+            <a href="{{ url_for('clear_session') }}" class="nav-link">🗑️ Clear Session</a>
+        </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <form action="{{ url_for('search_results') }}" method="post" class="search-form">
+                <div class="search-input-group">
+                    <input 
+                        type="text" 
+                        name="query" 
+                        id="query" 
+                        placeholder="Enter search terms..." 
+                        class="search-input"
+                        required
+                        autofocus
+                    >
+                    <button type="submit" class="btn btn-search">
+                        🔍 Search
+                    </button>
+                </div>
+            </form>
+
+            {% if session.recent_searches and session.recent_searches|length > 0 %}
+            <div class="recent-searches">
+                <p class="recent-label">Recent searches:</p>
+                <div class="tag-cloud">
+                    {% for search in session.recent_searches %}
+                        <span class="tag" onclick="document.getElementById('query').value='{{ search }}'; document.getElementById('query').focus();">
+                            {{ search }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="info-card">
+            <h3>💡 Search Tips</h3>
+            <ul>
+                <li><strong>Simple search:</strong> Just type your keywords</li>
+                <li><strong>Phrase search:</strong> Use exact phrases for precise matches</li>
+                <li><strong>Case insensitive:</strong> Searches work regardless of capitalization</li>
+                <li><strong>Context shown:</strong> See surrounding text for each match</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Built with Python Flask | Your notes are processed locally</p>
+        </footer>
+    </div>
+
+    <script>
+        // Auto-focus on search input
+        document.getElementById('query').focus();
+
+        // Handle Enter key in search
+        document.getElementById('query').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.target.form.submit();
+            }
+        });
+    </script>
+</body>
+</html>
