@@ -1,3 +1,3 @@
 #     AI-Notes-Summarizer
 
-It is a simple website that checks your password, and give it a rating. IT DOESN'T STORE ANY PASSWORD.
+It is a simple website that makes notes for you upload and it will summarize it, takes .ppt, .pptx, .pdf, txt and returns, txt NO HAND WRITTEN NOTES
